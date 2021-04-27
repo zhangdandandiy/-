@@ -1,0 +1,599 @@
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <process.h>
+using namespace std;
+struct node                                     //定义结构体
+{
+        int  num;
+        char name[20];
+        char sex[10];
+        char year[50];
+        char number[50];
+        char native_place[50];
+        char work_place[50];
+        char home_place[50];
+        char mailing_place[50];
+        char postcode[50];
+        node *next;
+};
+void input()
+{
+        FILE *fp;
+        int i;
+        char fpname[10];
+        printf("请输入要新建的文件：");
+        scanf("%s",fpname);
+        fp=fopen(fpname,"w+");
+        node *head,*p1,*p2,*tou;                   //定义头结点
+        head = (node*)malloc(sizeof(node));        //为头结点开辟动态内存
+        tou = (node*)malloc(sizeof(node));
+        head->next=tou;
+        p1=tou;
+        char ch1[1];
+        for(i=1;;i++)
+        {
+                p2=(node*)malloc(sizeof(node));          //为p2开辟动态内存
+                p1->num=i;
+                printf("请输入姓名：");
+                scanf("%s",p1->name);
+                printf("请输入性别：");
+                scanf("%s",p1->sex);
+                printf("请输入年龄：");
+                scanf("%s",p1->year);
+                printf("请输入电话号码：");
+                scanf("%s",p1->number);
+                printf("请输入籍贯：");
+                scanf("%s",p1->native_place);
+                printf("请输入工作地址");
+                scanf("%s",p1->work_place);
+                printf("请输入家庭住址");
+                scanf("%s",p1->home_place);
+                printf("请输入通信地址：");
+                scanf("%s",p1->mailing_place);
+                printf("请输入邮编：");
+                scanf("%s",p1->postcode);
+                printf("是否继续录入联系人信息？（是：Y  否：N）\n");
+                for(;;)
+                {
+                        scanf("%s",ch1);
+                        if((ch1[0]=='Y')||(ch1[0]=='N'))
+                        {
+                                break;
+                        }
+                        printf("请输入“Y”或“N”！");
+                }
+                if(ch1[0]=='N')
+                {
+                        break;
+                }
+                        p1->next=p2;
+                        p1=p2;
+        }
+        p1->next=NULL;
+        for(p1=head->next;p1!=NULL;p1=p1->next)
+        {
+                fprintf(fp,"%s %s %s %s %s %s %s %s %s\n",p1->name,p1->sex,p1->year,p1->number,
+                p1->native_place,p1->work_place,p1->home_place,p1->mailing_place,p1->postcode);
+        }
+        fclose(fp);
+        printf("\n已创建成功！\n");
+}
+node *read(char fpname[])                      //定义read函数，将文件数据传入单链表中
+{
+        FILE *fp; int i;
+        node *p;
+        node *head,*p1,*p2,*tou;                   //定义头结点
+        head = (node*)malloc(sizeof(node));        //为头结点开辟动态内存
+        tou = (node*)malloc(sizeof(node));
+        head->next=tou;
+        p1=tou;
+        char ch1[1];
+        fp=fopen(fpname,"r");                       //以只读打开文件
+        for(i=1;;i++)
+        {
+                p2=(node*)malloc(sizeof(node));          //为p2开辟动态内存
+                p1->num=i;
+                fscanf(fp,"%s %s %s %s %s %s %s %s %s\n",p1->name,p1->sex,p1->year,p1->number,
+                p1->native_place,p1->work_place,p1->home_place,p1->mailing_place,p1->postcode);        //将文件数据传入单链表中
+                if(feof(fp))                                                                         //读完文件所有数据，结束
+                {
+                        break;
+                }
+                p1->next=p2;
+                p1=p2;
+        }
+        fclose(fp);
+        p1->next=NULL;
+        return head;                                                                                //返回头指针
+}
+void print(node *head,char fpname[])                                                           //定义print函数，将链表数据存入文件中
+{
+        FILE *fp;
+        node *p1;
+        fp=fopen(fpname,"w");                                                                    //以只写打开文件
+        for(p1=head->next;p1!=NULL;p1=p1->next)
+        {
+                fprintf(fp,"%s %s %s %s %s %s %s %s %s\n",p1->name,p1->sex,p1->year,p1->number,            //将链表数据存入文件中
+                p1->native_place,p1->work_place,p1->home_place,p1->mailing_place,p1->postcode);
+        }
+        fclose(fp);
+}
+void Display(node *head)                                                 //构建显示函数
+{
+        node *p;
+        for(p=head->next;p!=NULL;p=p->next)                              //遍历链表并输出
+        {
+                printf("序号：%d    姓名：%s    性别：%s    年龄： %s    电话：%s    籍贯：%s    工作单位：%s   家庭住址: %s    通信地址 :%s    邮编 : %s   \n\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+
+        }
+}
+void Modify(node *head)                                                   //构建修改函数
+{
+        node *p;
+        int n;
+        char ch1[50],ch2[50],ch3[2];                                       //定义字符串
+        for(;;)                                                               //循环需要修改的数据
+        {
+                printf("请输入需要修改数据类型的序号：");
+                printf("\n1：姓名: 2：性别: 3：年龄 4：电话 5：籍贯: 6：现工作单位 7：家庭住址: 8：通信地址: 9：邮编\n");                        //提示信息
+                scanf("%d",&n);
+                if(n==1)                                                             //根据输入的类型序号，修改不同类型的数据
+                {
+                        printf("请输入要修改的数据：");
+                        scanf("%s",ch1);
+                        printf("请输入修改后的数据：");
+                        scanf("%s",ch2);
+                        for(p=head->next;;p=p->next)                                  //遍历链表
+                        {
+                                if(strcmp(p->name,ch1)==0)                            //查找所需修改的数据
+                                {
+                                        strcpy(p->name,ch2);                           //修改数据
+                                        printf("已修改完成：\n");                       //显示修改后的数据
+                                        printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+                                        break;
+                                }
+                                if(p->next==NULL)                                            //如果遍历结束未找到所要修改的数据，提示用户未找到
+                                {
+                                        printf("未找到需要修改的数据！");
+                                        break;
+                                }
+                        }
+                }
+                else if(n==2)
+                {
+                        printf("请输入要修改的数据：");
+                        scanf("%s",ch1);
+                        printf("请输入修改后的数据：");
+                        scanf("%s",ch2);
+                        for(p=head->next;;p=p->next)
+                        {
+                                if(strcmp(p->sex,ch1)==0)
+                                {
+                                        strcpy(p->sex,ch2);
+                                        printf("已修改完成：\n");
+                                        printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+                                        break;
+                                }
+                                if(p->next==NULL)
+                                {
+                                        printf("未找到需要修改的数据！");
+                                        break;
+                                }
+                        }
+                }
+                else if(n==3)
+                {
+                        printf("请输入要修改的数据：");
+                        scanf("%s",ch1);
+                        printf("请输入修改后的数据：");
+                        scanf("%s",ch2);
+                        for(p=head->next;;p=p->next)
+                        {
+                                if(strcmp(p->year,ch1)==0)
+                                {
+                                        strcpy(p->year,ch2);
+                                        printf("已修改完成：\n");
+                                        printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+                                        break;
+                                }
+                                if(p->next==NULL)
+                                {
+                                        printf("未找到需要修改的数据！");
+                                        break;
+                                }
+                        }
+                }
+                else if(n==4)
+                {
+                        printf("请输入要修改的数据：");
+                        scanf("%s",ch1);
+                        printf("请输入修改后的数据：");
+                        scanf("%s",ch2);
+                        for(p=head->next;;p=p->next)
+                        {
+                                if(strcmp(p->number,ch1)==0)
+                                {
+                                        strcpy(p->number,ch2);
+                                        printf("已修改完成：\n");
+                                        printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+                                        break;
+                                }
+                                if(p->next==NULL)
+                                {
+                                        printf("未找到需要修改的数据！");
+                                        break;
+                                }
+                        }
+                }
+                else if(n==5)
+                {
+                        printf("请输入要修改的数据：");
+                scanf("%s",ch1);
+                printf("请输入修改后的数据：");
+                scanf("%s",ch2);
+                for(p=head->next;;p=p->next)
+                {
+                        if(strcmp(p->native_place,ch1)==0)
+                        {
+                                strcpy(p->native_place,ch2);
+                                printf("已修改完成：\n");
+                                printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+
+                                break;
+                        }
+                        if(p->next==NULL)
+                        {
+                                printf("未找到需要修改的数据！");
+                                break;
+                        }
+                }
+        }
+        else if(n==6)
+        {
+                printf("请输入要修改的数据：");
+                scanf("%s",ch1);
+                printf("请输入修改后的数据：");
+                scanf("%s",ch2);
+                for(p=head->next;;p=p->next)
+                {
+                        if(strcmp(p->work_place,ch1)==0)
+                        {
+                                strcpy(p->work_place,ch2);
+                                printf("已修改完成：\n");
+                                printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+
+                                break;
+                        }
+                        if(p->next==NULL)
+                        {
+                                printf("未找到需要修改的数据！");
+                                break;
+                        }
+                }
+        }
+        else if(n==7)
+        {
+                printf("请输入要修改的数据：");
+                scanf("%s",ch1);
+                printf("请输入修改后的数据：");
+                scanf("%s",ch2);
+                for(p=head->next;;p=p->next)
+                {
+                        if(strcmp(p->home_place,ch1)==0)
+                        {
+                                strcpy(p->home_place,ch2);
+                                printf("已修改完成：\n");
+                                printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+
+                                break;
+                        }
+                        if(p->next==NULL)
+                        {
+                                printf("未找到需要修改的数据！");
+                                break;
+                        }
+                }
+        }
+        else if(n==8)
+        {
+                printf("请输入要修改的数据：");
+                scanf("%s",ch1);
+                printf("请输入修改后的数据：");
+                scanf("%s",ch2);
+                for(p=head->next;;p=p->next)
+                {
+                        if(strcmp(p->mailing_place,ch1)==0)
+                        {
+                                strcpy(p->mailing_place,ch2);
+                                printf("已修改完成：\n");
+                                printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+
+                                break;
+                        }
+                        if(p->next==NULL)
+                        {
+                                printf("未找到需要修改的数据！");
+                                break;
+                        }
+                }
+        }
+        else if(n==9)
+        {
+                printf("请输入要修改的数据：");
+                scanf("%s",ch1);
+                printf("请输入修改后的数据：");
+                scanf("%s",ch2);
+                for(p=head->next;;p=p->next)
+                {
+                        if(strcmp(p->postcode,ch1)==0)
+                        {
+                                strcpy(p->postcode,ch2);
+                                printf("已修改完成：\n");
+                                printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+
+                                break;
+                        }
+                        if(p->next==NULL)
+                        {
+                                printf("未找到需要修改的数据！");
+                                break;
+                        }
+                }
+        }
+        printf("是否继续修改联系人信息？（是：Y  否：N）\n");                            //提示信息
+        for(;;)
+        {
+                scanf("%s",ch3);
+                if((ch3[0]=='Y')||(ch3[0]=='N'))                                            //判断输入是否正确
+                {
+                        break;
+                }
+                printf("请输入“Y”或“N”！");
+        }
+        if(ch3[0]=='N')                                                                    //结束循环
+        {
+                break;
+        }
+        }
+}
+void Find(node *head)                                                                    //定义查找函数
+{
+        node *p;
+        char ch1[50],ch3[2];
+        for(;;)                                                                           //循环输入待查找信息
+        {
+        printf("请输入需要查询的信息：");
+        scanf("%s",ch1);
+        int m;
+        m=ch1[0]-48;                                                                      //如按序号查找，将字符数据数值与数字类数据大小统一
+        for(p=head->next;;p=p->next)                                                       //遍历链表
+        {
+                if((m==p->num)||(strcmp(p->sex,ch1)==0)||(strcmp(p->name,ch1)==0)||(strcmp(p->number,ch1)==0)||(strcmp(p->native_place,ch1)==0)||(strcmp(p->number,ch1)==0)||(strcmp(p->work_place,ch1)==0)||(strcmp(p->year,ch1)==0))
+                 {
+                        printf("序号：%d 姓名：%s 性别：%s 年龄： %s 电话：%s 籍贯：%s 工作单位：%s 家庭住址: %s 通信地址 :%s 邮编 : %s\n",p->num,p->name,p->sex,p->year,p->number,p->native_place,p->work_place,p->home_place,p->mailing_place,p->postcode);
+                        break;
+                 }
+                if(p->next==NULL)                                                                //如未查找到提示用户
+                {
+                        printf("未找到所要查询的数据！");
+                        break;
+                }
+        }
+        printf("是否继续查询联系人信息？（是：Y  否：N）\n");                              //判断是否继续查询联系人信息
+        for(;;)
+        {
+                scanf("%s",ch3);
+              if((ch3[0]=='Y')||(ch3[0]=='N'))
+              {
+                      break;
+              }
+        printf("请输入“Y”或“N”！");
+        }
+        if(ch3[0]=='N')
+        {
+                break;
+        }
+        }
+}
+void add(node *head)                                                                        //定义增加函数
+{
+        node *p,*temp;
+        char ch1[2];
+        printf("请输入新增数据：");
+        int  n,i=1;
+        for(n=0;;n++)
+        {
+        p=(node*)malloc(sizeof(node));                                                      //为增加的结点开辟动态内存
+        p->next=NULL;                                                                       //新结点指向空
+        printf("请输入姓名：");
+        scanf("%s",p->name);
+        printf("请输入性别：");
+        scanf("%s",p->sex);
+        printf("请输入年龄：");
+        scanf("%s",p->year);
+        printf("请输入电话号码：");
+        scanf("%s",p->number);
+        printf("请输入籍贯：");
+        scanf("%s",p->native_place);
+        printf("请输入工作单位：");
+        scanf("%s",p->work_place);
+        printf("请输入家庭住址：");
+        scanf("%s",p->home_place);
+        printf("请输入通信地址：");
+        scanf("%s",p->mailing_place);
+        printf("请输入邮编：");
+        scanf("%s",p->postcode);
+        for(temp=head->next;;temp=temp->next)                                             //遍历链表
+        {
+                if(temp->next==NULL)                                                      //找到最后的结点
+                {
+                temp->next=p;                                                             //将新结点连到链表末尾
+                break;
+                }
+        }
+        printf("是否继续增加录入联系人信息？（是：Y  否：N）\n");                          //判断是否继续增加数据
+        for(;;)
+        {
+                scanf("%s",ch1);
+              if((ch1[0]=='Y')||(ch1[0]=='N'))
+              {
+                      break;
+              }
+        printf("请输入“Y”或“N”！");
+        }
+        if(ch1[0]=='N')                                                                      //结束循环
+        {
+                break;
+        }
+        }
+        for(p=head->next;p!=NULL;p=p->next)                                                   //遍历链表，为序号赋值
+        {
+                p->num=i;
+                i++;
+        }
+}
+void Delete(node *head)                                                                        //定义删除函数
+{
+         node *p,*temp;
+        char ch1[2],ch[50];
+                printf("请输入需要删除的联系人姓名：");                                         //提示信息
+                for(;;)
+                {
+                scanf("%s",ch);
+                for(p=head;;p=p->next)                                                           //遍历链表
+                {
+                        if(strcmp(p->next->name,ch)==0)                                          //查找需要删除的结点
+                        {
+                                p->next=p->next->next;                                           //删除结点
+                                printf("已删除！");
+                                break;
+                        }
+                        if(p==NULL)
+                        {
+                                printf("未找到所要删除的数据！");
+                                break;
+                        }
+                }
+        printf("是否继续删除联系人信息？（是：Y  否：N）\n");                                      //提示是否继续删除
+        for(;;)
+        {
+                scanf("%s",ch1);
+              if((ch1[0]=='Y')||(ch1[0]=='N'))
+              {
+                      break;
+              }
+        printf("请输入“Y”或“N”！");
+        }
+        if(ch1[0]=='N')
+        {
+                break;
+        }
+        }
+        int i=1;
+        for(p=head->next;p!=NULL;p=p->next)                                                       //删除后重新对序号赋值
+        {
+                p->num=i;
+                i++;
+        }
+}
+int main()
+{
+    char ch1[1];                                                                                 //定义储存操作序号的字符串
+    node *q;
+    FILE *fp;
+    char fpname[10];                                                                              //定义文件名
+        int k=0,m;
+        printf("请选择打开文件或新建文件\n1.打开班级文件。    2.新建班级文件\n");
+        scanf("%d",&m);
+        if(m==2)
+        {
+                input();
+        }
+        printf("请输入要打开的文件名！");
+        for(;;)
+        {
+        scanf("%s",fpname);                                                                        //输入要打开的文件名
+        if((fp=fopen(fpname,"r"))==NULL)
+        {
+                printf("该文件不存在，请输入正确的文件名！\n");
+        }
+        else{
+                k=1;
+        }
+        if(k==1)
+        {
+                break;                                                                             //结束循环
+        }
+        }                                                                               //定义结构体指针
+    for(;;)                                                                                //循环执行操作
+    {
+        system("cls");
+        printf("* * * * * * Menue * * * * * * * * * * * *\n");
+        printf("*           a.Display--显示联系人       * \n");
+        printf("*           b.Modify---修改联系人       * \n");
+        printf("*           c.Find-----查找联系人       * \n");
+        printf("*           d.add------增加联系人       * \n");
+        printf("*           e.Delete---删除联系人       * \n");
+        printf("*           f.new------增加班级         * \n");
+        printf("*           g.Exit-----退出程序         * \n");
+        printf("*           Please select a to f        *\n");
+        printf("* * * * * * * * * * * * * * * * * * * * *\n");
+        printf("请输入需要的操作:");
+        scanf("%s",ch1);
+        if(ch1[0]=='g')                                                                          //结束循环
+        {
+                print(q,fpname);
+                printf("已退出！");
+                break;
+        }
+        else if(ch1[0]=='f')
+        {
+             input();                                                                            //调用input函数新建文件
+             break;
+        }
+        else
+        switch(ch1[0])
+        {
+        case 'a':
+        q=read(fpname);                                                                            //调用read函数
+        Display(q);                                                                                //调用显示函数
+        print(q,fpname);                                                                           //调用print函数
+        system("pause");                                                                           //清屏函数
+        break;
+
+        case 'b':
+        q=read(fpname);                                                                                //调用read函数
+        Modify(q);                                                                                     //调用修改函数
+        print(q,fpname);                                                                               //调用print函数
+        system("pause");                                                                               //清屏函数
+        break;
+
+        case 'c':
+        q=read(fpname);                                                                              //调用read函数
+        Find(q);                                                                                     //调用查询函数
+        print(q,fpname);                                                                             //调用print函数
+        system("pause");                                                                             //清屏函数
+        break;
+
+        case 'd':
+        q=read(fpname);                                                                               //调用read函数
+        add(q);                                                                                       //调用增加函数
+        print(q,fpname);                                                                              //调用print函数
+        system("pause");                                                                              //清屏函数
+        break;
+
+        case 'e':
+        q=read(fpname);                                                                                //调用read函数
+        Delete(q);                                                                                     //调用删除函数
+        print(q,fpname);                                                                               //调用print函数
+        system("pause");                                                                               //清屏函数
+        break;
+        default:
+        printf("请输入正确的选项！\n");                                                                  //提示用户输入正确选项
+        system("pause");                                                                                 //清屏函数
+        }
+    }
+    return 0;
+}
